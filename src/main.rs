@@ -4,19 +4,10 @@ fn largest_bit(num: &i64) -> Option<usize> {
     if *num == 0 {
         return None;
     } else {
-        println!("{:?}",
-                 (num & 64, num & 32, num & 16, num & 8, num & 4, num & 2));
-        let bit = match (num & 64, num & 32, num & 16, num & 8, num & 4, num & 2) {
-            (_, _, _, _, _, 0) => 0,
-            (_, _, _, _, 0, _) => 1,
-            (_, _, _, 0, _, _) => 2,
-            (_, _, 0, _, _, _) => 3,
-            (_, 0, _, _, _, _) => 4,
-            (0, _, _, _, _, _) => 5,
-            (_, _, _, _, _, _) => 0 - 1,
-        };
-        if bit > 0 - 1 {
-            Some(bit as usize)
+        let bit = format!("{:b}", num);
+        let bit_len = bit.len() - 1;
+        if bit_len >= 0 {
+            Some(bit_len as usize)
         } else {
             // println!("Neg");
             None
@@ -52,13 +43,13 @@ fn xsort(vec: &mut Vec<i64>) -> Option<i64> {
                 // bit_flag);
                 //
                 if empty[largest].is_some() && empty[largest].unwrap() != bit_flag {
-                    println!("break {:?}\n{},{} ", empty, largest, bit_flag);
+                    // println!("break {:?}\n{},{} ", empty, largest, bit_flag);
                     return None;
                 } else {
                     empty[largest] = Some(bit_flag);
                 }
             }
-            None => println!("skip"),
+            None => {}
         }
     }
     // println!("{:?}", empty);
@@ -103,7 +94,7 @@ fn it_works() {
         let real_path = path.unwrap().path();
         println!("File: {}", real_path.display());
         let (result, mut vec) = load_test(real_path);
-        println!("{:?}", vec);
+        // println!("{:?}", vec);
         assert_eq!(result, xsort(&mut vec));
     }
     assert!(true);
