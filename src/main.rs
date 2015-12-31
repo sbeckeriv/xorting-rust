@@ -1,4 +1,4 @@
-extern crate bit_vec;
+extern crate time;
 
 fn largest_bit(num: &i64) -> Option<usize> {
     if *num == 0 {
@@ -65,12 +65,12 @@ fn main() {
     println!("{:?},", xsort(&mut t2));
 }
 
-fn load_test(path: std::path::PathBuf) -> (Option<i64>, Vec<i64>) {
+fn load_test(path: &std::path::PathBuf) -> (Option<i64>, Vec<i64>) {
     use std::env;
     use std::path::Path;
     use std::io::prelude::*;
     use std::fs::File;
-    let mut open_file = File::open(path).unwrap();
+    let mut open_file = File::open((*path).clone()).unwrap();
     let mut buffer = String::new();
     open_file.read_to_string(&mut buffer).unwrap();
     let mut numbers = buffer.lines()
@@ -92,10 +92,13 @@ fn it_works() {
     let paths = fs::read_dir("./examples").unwrap();
     for path in paths {
         let real_path = path.unwrap().path();
-        println!("File: {}", real_path.display());
-        let (result, mut vec) = load_test(real_path);
-        // println!("{:?}", vec);
+        let (result, mut vec) = load_test(&real_path);
+        let t = time::now();
         assert_eq!(result, xsort(&mut vec));
+        println!("File {} with {} numbers took {:?}",
+                 real_path.display(),
+                 vec.len(),
+                 time::now() - t);
     }
     assert!(true);
 }
