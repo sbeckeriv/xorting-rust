@@ -4,46 +4,35 @@ fn largest_bit(num: &i64) -> Option<usize> {
     if *num == 0 {
         return None;
     } else {
-        let bit = format!("{:b}", num);
-        let bit_len = bit.len() - 1;
-        if bit_len >= 0 {
-            Some(bit_len as usize)
+        let bit = format!("{:b}", num).len() - 1;
+        if bit >= 0 {
+            Some(bit as usize)
         } else {
-            // println!("Neg");
             None
         }
     }
 }
+
 fn option_to_bit(bool_bit: &Option<bool>) -> i64 {
     match *bool_bit {
         Some(b) => {
-            if b {
-                1
-            } else {
-                0
+            match b {
+                true => 1,
+                false => 0,
             }
         }
         None => 0,
     }
 }
 fn xsort(vec: &mut Vec<i64>) -> Option<i64> {
+    // numbers never larger then 32bits
     let mut empty: Vec<Option<bool>> = vec![None; 32];
-    // println!("{}", empty.len());
     for i in 0..vec.len() - 1 {
         let n = vec[i] ^ vec[i + 1];
-        let large = largest_bit(&n);
-        match large {
+        match largest_bit(&n) {
             Some(largest) => {
                 let bit_flag = vec[i] & (1 << largest) != 0;
-                // println!("{}, {}, {}, {}, {} ",
-                // vec[i],
-                // vec[i + 1],
-                // n,
-                // largest,
-                // bit_flag);
-                //
                 if empty[largest].is_some() && empty[largest].unwrap() != bit_flag {
-                    // println!("break {:?}\n{},{} ", empty, largest, bit_flag);
                     return None;
                 } else {
                     empty[largest] = Some(bit_flag);
@@ -52,7 +41,6 @@ fn xsort(vec: &mut Vec<i64>) -> Option<i64> {
             None => {}
         }
     }
-    // println!("{:?}", empty);
     let answer: i64 = empty.iter().rev().fold(0, |acc, &b| acc * 2 + option_to_bit(&b));
     Some(answer)
 }
@@ -94,11 +82,14 @@ fn it_works() {
         let real_path = path.unwrap().path();
         let (result, mut vec) = load_test(&real_path);
         let t = time::now();
-        assert_eq!(result, xsort(&mut vec));
-        println!("File {} with {} numbers took {:?}",
+        let x_result = xsort(&mut vec);
+        let t2 = time::now();
+        assert_eq!(result, x_result);
+        println!("File {} with {} numbers took {:?} result {:?}",
                  real_path.display(),
                  vec.len(),
-                 time::now() - t);
+                 t2 - t,
+                 x_result);
     }
     assert!(true);
 }
